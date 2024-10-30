@@ -215,6 +215,74 @@
 
 \subsection{Submission Steps (10 pts)}\label{submission-steps-10-pts}
 
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  This problem set is a paired problem set.
+\item
+  Play paper, scissors, rock to determine who goes first. Call that
+  person \emph{Partner 1}.
+
+  \begin{itemize}
+  \tightlist
+  \item
+    Partner 1 (name and cnet ID): Andy Fan, fanx
+  \item
+    Partner 2 (name and cnet ID):
+  \end{itemize}
+\item
+  Partner 1 will accept the \texttt{ps4} and then share the link it
+  creates with their partner. You can only share it with one partner so
+  you will not be able to change it after your partner has accepted.
+\item
+  ``This submission is our work alone and complies with the 30538
+  integrity policy.'' Add your initials to indicate your agreement:
+\end{enumerate}
+
+AF WS
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\setcounter{enumi}{4}
+\tightlist
+\item
+  ``I have uploaded the names of anyone else other than my partner and I
+  worked with on the problem set
+  \textbf{\href{https://docs.google.com/forms/d/185usrCREQaUbvAXpWhChkjghdGgmAZXA3lPWpXLLsts/edit}{here}}''
+  (1 point)
+\item
+  Late coins used this pset: (Andy:0); (will:0) Late coins left after
+  submission: (Andy: 3) ; (will: 4)
+\item
+  Knit your \texttt{ps4.qmd} to an PDF file to make \texttt{ps4.pdf},
+
+  \begin{itemize}
+  \tightlist
+  \item
+    The PDF should not be more than 25 pages. Use \texttt{head()} and
+    re-size figures when appropriate.
+  \end{itemize}
+\item
+  (Partner 1): push \texttt{ps4.qmd} and \texttt{ps4.pdf} to your github
+  repo.
+\item
+  (Partner 1): submit \texttt{ps4.pdf} via Gradescope. Add your partner
+  on Gradescope.
+\item
+  (Partner 1): tag your submission in Gradescope
+\end{enumerate}
+
+\textbf{Important:} Repositories are for tracking code. \textbf{Do not
+commit the data or shapefiles to your repo.} The best way to do this is
+with \texttt{.gitignore}, which we have covered in class. If you do
+accidentally commit the data, Github has a
+\href{https://docs.github.com/en/repositories/working-with-files/managing-large-files/about-large-files-on-github\#removing-files-from-a-repositorys-history}{guide}.
+The best course of action depends on whether you have pushed yet. This
+also means that both partners will have to download the initial raw data
+and any data cleaning code will need to be re-run on both partners'
+computers.
+
 \subsection{Download and explore the Provider of Services (POS) file (10
 pts)}\label{download-and-explore-the-provider-of-services-pos-file-10-pts}
 
@@ -300,79 +368,162 @@ b.compare to previous step, what does this tell about data structure
 \subsection{Identify hospital closures in POS file (15 pts)
 (*)}\label{identify-hospital-closures-in-pos-file-15-pts}
 
-\begin{enumerate}
-\def\labelenumi{\arabic{enumi}.}
-\tightlist
-\item
-\item
-\item
-  \begin{enumerate}
-  \def\labelenumii{\alph{enumii}.}
-  \tightlist
-  \item
-  \item
-  \item
-  \end{enumerate}
-\end{enumerate}
+We will now use the 2016-2019 files to identify hospital closures
+nationally. A hospital issuspected to have closed if its Termination
+Code in the POS file lists them as an ``Active Provider'' in 2016 and
+then they are either not active or do not appear in the data at all in a
+subsequent year.
+
+\paragraph{1. (Partner 2) Use this definition to create a list of all
+hospitals that were active in 2016 that were suspected to have closed by
+2019. Record the facility name and zip of each hospital as well as the
+year of suspected closure (when they become terminated or disappear from
+the data). How many hospitals are there that fit this
+definition?}\label{partner-2-use-this-definition-to-create-a-list-of-all-hospitals-that-were-active-in-2016-that-were-suspected-to-have-closed-by-2019.-record-the-facility-name-and-zip-of-each-hospital-as-well-as-the-year-of-suspected-closure-when-they-become-terminated-or-disappear-from-the-data.-how-many-hospitals-are-there-that-fit-this-definition}
+
+\paragraph{2. (Partner 2) Sort this list of hospitals by name and report
+the names and year of suspected closure for the first 10
+rows.}\label{partner-2-sort-this-list-of-hospitals-by-name-and-report-the-names-and-year-of-suspected-closure-for-the-first-10-rows.}
+
+\paragraph{3. (Partner 2) However, not all suspected hospital closures
+are true closures. For example, in the case of a merger, a CMS
+certification number will be appear to be ``terminated,'' but then the
+hospital re-appear under a similar name/address with a new CMS certifi
+cation number in the next year. As a first pass to address this, remove
+any suspected hospital closures that are in zip codes where the number
+of active hospitals does not decrease in the year after the suspected
+closure.}\label{partner-2-however-not-all-suspected-hospital-closures-are-true-closures.-for-example-in-the-case-of-a-merger-a-cms-certification-number-will-be-appear-to-be-terminated-but-then-the-hospital-re-appear-under-a-similar-nameaddress-with-a-new-cms-certifi-cation-number-in-the-next-year.-as-a-first-pass-to-address-this-remove-any-suspected-hospital-closures-that-are-in-zip-codes-where-the-number-of-active-hospitals-does-not-decrease-in-the-year-after-the-suspected-closure.}
+
+\begin{verbatim}
+a. Among the suspected closures, how many hospitals fit this definition of potentially being a merger/acquisition?
+
+b. After correcting for this, how many hospitals do you have left?
+
+c. Sort this list of corrected hospital closures by name and report the first 10 rows.
+\end{verbatim}
 
 \subsection{Download Census zip code shapefile (10
 pt)}\label{download-census-zip-code-shapefile-10-pt}
 
-\begin{enumerate}
-\def\labelenumi{\arabic{enumi}.}
-\tightlist
-\item
-  \begin{enumerate}
-  \def\labelenumii{\alph{enumii}.}
-  \tightlist
-  \item
-  \item
-  \end{enumerate}
-\item
-\end{enumerate}
+Navigate to the Census shapefiles (link), select
+``gz\_2010\_us\_860\_00\_500k.zip'' and download the resulting
+shapefile. Note: If you have difficulty downloading or working with the
+file because the size is too large for your computer, reach out to the
+instruction team on Ed so that we can give them a smaller initial
+shapefile to work with.
+
+\paragraph{1. (Partner 1) This is non-tabular data. 1a. What are the
+five file types and what type of information is in each file? 1b. It
+will be useful going forward to have a sense going forward of which
+files are big versus small. After unzipping, how big is each of the
+datasets?}\label{partner-1-this-is-non-tabular-data.-1a.-what-are-the-five-file-types-and-what-type-of-information-is-in-each-file-1b.-it-will-be-useful-going-forward-to-have-a-sense-going-forward-of-which-files-are-big-versus-small.-after-unzipping-how-big-is-each-of-the-datasets}
+
+\begin{verbatim}
+a.
+
+b. 
+\end{verbatim}
+
+\paragraph{2. (Partner 1) Load the zip code shapefile and restrict to
+Texas zip codes. (Hint: you can identify which state a zip code is in
+using the first 2-3 numbers in the zip code (Wikipedia link). Then
+calculate the number of hospitals per zip code in 2016 based on the
+cleaned POS file from the previous step. Plot a choropleth of the number
+of hospitals by zip code in
+Texas.}\label{partner-1-load-the-zip-code-shapefile-and-restrict-to-texas-zip-codes.-hint-you-can-identify-which-state-a-zip-code-is-in-using-the-first-2-3-numbers-in-the-zip-code-wikipedia-link.-then-calculate-the-number-of-hospitals-per-zip-code-in-2016-based-on-the-cleaned-pos-file-from-the-previous-step.-plot-a-choropleth-of-the-number-of-hospitals-by-zip-code-in-texas.}
 
 \subsection{Calculate zip code's distance to the nearest hospital (20
 pts)
 (*)}\label{calculate-zip-codes-distance-to-the-nearest-hospital-20-pts}
 
-\begin{enumerate}
-\def\labelenumi{\arabic{enumi}.}
-\tightlist
-\item
-\item
-\item
-\item
-  \begin{enumerate}
-  \def\labelenumii{\alph{enumii}.}
-  \tightlist
-  \item
-  \item
-  \item
-  \end{enumerate}
-\item
-  \begin{enumerate}
-  \def\labelenumii{\alph{enumii}.}
-  \tightlist
-  \item
-  \item
-  \item
-  \end{enumerate}
-\end{enumerate}
+\paragraph{1. (Partner 2) Create a GeoDataFrame for the centroid of each
+zip code nationally: zips\_all\_centroids. What are the dimensions of
+the resulting GeoDataFrame and what do each of the columns
+mean?}\label{partner-2-create-a-geodataframe-for-the-centroid-of-each-zip-code-nationally-zips_all_centroids.-what-are-the-dimensions-of-the-resulting-geodataframe-and-what-do-each-of-the-columns-mean}
+
+\paragraph{2. (Partner 2) Create two GeoDataFrames as subsets of
+zips\_all\_centroids. First, create all zip codes in Texas:
+zips\_texas\_centroids. Then, create all zip codes in Texas or a
+bordering state: zips\_texas\_borderstates\_centroids, using the zip
+code prefixes to make these subsets. How many unique zip codes are in
+each of these
+subsets?}\label{partner-2-create-two-geodataframes-as-subsets-of-zips_all_centroids.-first-create-all-zip-codes-in-texas-zips_texas_centroids.-then-create-all-zip-codes-in-texas-or-a-bordering-state-zips_texas_borderstates_centroids-using-the-zip-code-prefixes-to-make-these-subsets.-how-many-unique-zip-codes-are-in-each-of-these-subsets}
+
+\paragraph{3.(Partner 2) Then create a subset of
+zips\_texas\_borderstates\_centroids that contains only the zip codes
+with at least 1 hospital in 2016. Call the resulting GeoDataFrame
+zips\_withhospital\_centroids What kind of merge did you decide to do,
+and what variable are you merging
+on?}\label{partner-2-then-create-a-subset-of-zips_texas_borderstates_centroids-that-contains-only-the-zip-codes-with-at-least-1-hospital-in-2016.-call-the-resulting-geodataframe-zips_withhospital_centroids-what-kind-of-merge-did-you-decide-to-do-and-what-variable-are-you-merging-on}
+
+\paragraph{4. (Partner 2) For each zip code in zips\_texas\_centroids,
+calculate the distance to the nearest zip code with at least one
+hospital in
+zips\_withhospital\_centroids.}\label{partner-2-for-each-zip-code-in-zips_texas_centroids-calculate-the-distance-to-the-nearest-zip-code-with-at-least-one-hospital-in-zips_withhospital_centroids.}
+
+\begin{verbatim}
+a. This is a computationally-intensive join. Before attempting to do the entire join, subset to 10 zip codes in zips_texas_centroids and try the join. How long did it take? Approximately how long do you estimate the entire procedure will take?
+
+b. Now try doing the full calculation and time how long it takes. How close is it to your estimation?
+
+c. Look into the .prj file and report which unit it is in. Convert the given unit to miles, using an appropriate conversion you find online (estimates are okay).
+\end{verbatim}
+
+\paragraph{5.(Partner 2) Calculate the average distance to the nearest
+hospital for each zip code in
+Texas.}\label{partner-2-calculate-the-average-distance-to-the-nearest-hospital-for-each-zip-code-in-texas.}
+
+\begin{verbatim}
+a. What unit is this in
+
+b. Report the average distance in miles. Does this value make sense?
+
+c. Map the value for each zip code
+\end{verbatim}
 
 \subsection{Effects of closures on access in Texas (15
 pts)}\label{effects-of-closures-on-access-in-texas-15-pts}
 
-\begin{enumerate}
-\def\labelenumi{\arabic{enumi}.}
-\tightlist
-\item
-\item
-\item
-\item
-\end{enumerate}
+\paragraph{1. (Partner 1) Using the corrected hospital closures dataset
+from the first section, create a list of directly affected zip codes in
+Texas-- that is, those with at least one closure in 2016-2019. Display a
+table of the number of zip codes vs.~the number of closures they
+experienced.}\label{partner-1-using-the-corrected-hospital-closures-dataset-from-the-first-section-create-a-list-of-directly-affected-zip-codes-in-texas-that-is-those-with-at-least-one-closure-in-2016-2019.-display-a-table-of-the-number-of-zip-codes-vs.-the-number-of-closures-they-experienced.}
+
+\paragraph{2.(Partner 1) Plot a choropleth of which Texas zip codes were
+directly affected by a closure in 2016-2019-- there was at least one
+closure within the zip code. How many directly affected zip codes are
+there in
+Texas?}\label{partner-1-plot-a-choropleth-of-which-texas-zip-codes-were-directly-affected-by-a-closure-in-2016-2019-there-was-at-least-one-closure-within-the-zip-code.-how-many-directly-affected-zip-codes-are-there-in-texas}
+
+\paragraph{3. (Partner 1) Then identify all the indirectly affected zip
+codes: Texas zip codes within a 10-mile radius of the directly affected
+zip codes. To do so, first create a GeoDataFrame of the directly
+affected zip codes. Then create a 10-mile buffer around them. Then, do a
+spatial join with the overall Texas zip code shapefile. How many
+indirectly affected zip codes are there in
+Texas?}\label{partner-1-then-identify-all-the-indirectly-affected-zip-codes-texas-zip-codes-within-a-10-mile-radius-of-the-directly-affected-zip-codes.-to-do-so-first-create-a-geodataframe-of-the-directly-affected-zip-codes.-then-create-a-10-mile-buffer-around-them.-then-do-a-spatial-join-with-the-overall-texas-zip-code-shapefile.-how-many-indirectly-affected-zip-codes-are-there-in-texas}
+
+\paragraph{4.(Partner 1) Make a choropleth plot of the Texas zip codes
+with a different color for each of the 3 categories: directly affected
+by a closure, within 10 miles of closure but not directly affected, or
+not
+affected.}\label{partner-1-make-a-choropleth-plot-of-the-texas-zip-codes-with-a-different-color-for-each-of-the-3-categories-directly-affected-by-a-closure-within-10-miles-of-closure-but-not-directly-affected-or-not-affected.}
 
 \subsection{Reflecting on the exercise (10
 pts)}\label{reflecting-on-the-exercise-10-pts}
+
+\paragraph{(Partner 1) The ``first-pass'' method we're using to address
+incorrectly identified closures in the data is imperfect. Can you think
+of some potential issues that could arise still and ways to do a better
+job at confirming hospital
+closures?}\label{partner-1-the-first-pass-method-were-using-to-address-incorrectly-identified-closures-in-the-data-is-imperfect.-can-you-think-of-some-potential-issues-that-could-arise-still-and-ways-to-do-a-better-job-at-confirming-hospital-closures}
+
+\paragraph{(Partner 2) Consider the way we are identifying zip codes
+affected by closures. How well does this reflect changes in
+zip-code-level access to hospitals? Can you think of some ways to
+improve this
+measure?}\label{partner-2-consider-the-way-we-are-identifying-zip-codes-affected-by-closures.-how-well-does-this-reflect-changes-in-zip-code-level-access-to-hospitals-can-you-think-of-some-ways-to-improve-this-measure}
 
 
 
