@@ -1,0 +1,380 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+\PassOptionsToPackage{dvipsnames,svgnames,x11names}{xcolor}
+%
+\documentclass[
+  letterpaper,
+  DIV=11,
+  numbers=noendperiod]{scrartcl}
+
+\usepackage{amsmath,amssymb}
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math}
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+\usepackage{lmodern}
+\ifPDFTeX\else  
+    % xetex/luatex font selection
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{xcolor}
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
+% Make \paragraph and \subparagraph free-standing
+\makeatletter
+\ifx\paragraph\undefined\else
+  \let\oldparagraph\paragraph
+  \renewcommand{\paragraph}{
+    \@ifstar
+      \xxxParagraphStar
+      \xxxParagraphNoStar
+  }
+  \newcommand{\xxxParagraphStar}[1]{\oldparagraph*{#1}\mbox{}}
+  \newcommand{\xxxParagraphNoStar}[1]{\oldparagraph{#1}\mbox{}}
+\fi
+\ifx\subparagraph\undefined\else
+  \let\oldsubparagraph\subparagraph
+  \renewcommand{\subparagraph}{
+    \@ifstar
+      \xxxSubParagraphStar
+      \xxxSubParagraphNoStar
+  }
+  \newcommand{\xxxSubParagraphStar}[1]{\oldsubparagraph*{#1}\mbox{}}
+  \newcommand{\xxxSubParagraphNoStar}[1]{\oldsubparagraph{#1}\mbox{}}
+\fi
+\makeatother
+
+\usepackage{color}
+\usepackage{fancyvrb}
+\newcommand{\VerbBar}{|}
+\newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+% Add ',fontsize=\small' for more characters per line
+\usepackage{framed}
+\definecolor{shadecolor}{RGB}{241,243,245}
+\newenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}
+\newcommand{\AlertTok}[1]{\textcolor[rgb]{0.68,0.00,0.00}{#1}}
+\newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.37,0.37,0.37}{#1}}
+\newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.40,0.45,0.13}{#1}}
+\newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.68,0.00,0.00}{#1}}
+\newcommand{\BuiltInTok}[1]{\textcolor[rgb]{0.00,0.23,0.31}{#1}}
+\newcommand{\CharTok}[1]{\textcolor[rgb]{0.13,0.47,0.30}{#1}}
+\newcommand{\CommentTok}[1]{\textcolor[rgb]{0.37,0.37,0.37}{#1}}
+\newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.37,0.37,0.37}{\textit{#1}}}
+\newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.00,0.23,0.31}{\textbf{#1}}}
+\newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.68,0.00,0.00}{#1}}
+\newcommand{\DecValTok}[1]{\textcolor[rgb]{0.68,0.00,0.00}{#1}}
+\newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.37,0.37,0.37}{\textit{#1}}}
+\newcommand{\ErrorTok}[1]{\textcolor[rgb]{0.68,0.00,0.00}{#1}}
+\newcommand{\ExtensionTok}[1]{\textcolor[rgb]{0.00,0.23,0.31}{#1}}
+\newcommand{\FloatTok}[1]{\textcolor[rgb]{0.68,0.00,0.00}{#1}}
+\newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.28,0.35,0.67}{#1}}
+\newcommand{\ImportTok}[1]{\textcolor[rgb]{0.00,0.46,0.62}{#1}}
+\newcommand{\InformationTok}[1]{\textcolor[rgb]{0.37,0.37,0.37}{#1}}
+\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.00,0.23,0.31}{\textbf{#1}}}
+\newcommand{\NormalTok}[1]{\textcolor[rgb]{0.00,0.23,0.31}{#1}}
+\newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.37,0.37,0.37}{#1}}
+\newcommand{\OtherTok}[1]{\textcolor[rgb]{0.00,0.23,0.31}{#1}}
+\newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.68,0.00,0.00}{#1}}
+\newcommand{\RegionMarkerTok}[1]{\textcolor[rgb]{0.00,0.23,0.31}{#1}}
+\newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.37,0.37,0.37}{#1}}
+\newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.13,0.47,0.30}{#1}}
+\newcommand{\StringTok}[1]{\textcolor[rgb]{0.13,0.47,0.30}{#1}}
+\newcommand{\VariableTok}[1]{\textcolor[rgb]{0.07,0.07,0.07}{#1}}
+\newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.13,0.47,0.30}{#1}}
+\newcommand{\WarningTok}[1]{\textcolor[rgb]{0.37,0.37,0.37}{\textit{#1}}}
+
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}\usepackage{longtable,booktabs,array}
+\usepackage{calc} % for calculating minipage widths
+% Correct order of tables after \paragraph or \subparagraph
+\usepackage{etoolbox}
+\makeatletter
+\patchcmd\longtable{\par}{\if@noskipsec\mbox{}\fi\par}{}{}
+\makeatother
+% Allow footnotes in longtable head/foot
+\IfFileExists{footnotehyper.sty}{\usepackage{footnotehyper}}{\usepackage{footnote}}
+\makesavenoteenv{longtable}
+\usepackage{graphicx}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+% Set default figure placement to htbp
+\makeatletter
+\def\fps@figure{htbp}
+\makeatother
+
+\usepackage{fvextra}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{breaklines,commandchars=\\\{\}}
+\KOMAoption{captions}{tableheading}
+\makeatletter
+\@ifpackageloaded{caption}{}{\usepackage{caption}}
+\AtBeginDocument{%
+\ifdefined\contentsname
+  \renewcommand*\contentsname{Table of contents}
+\else
+  \newcommand\contentsname{Table of contents}
+\fi
+\ifdefined\listfigurename
+  \renewcommand*\listfigurename{List of Figures}
+\else
+  \newcommand\listfigurename{List of Figures}
+\fi
+\ifdefined\listtablename
+  \renewcommand*\listtablename{List of Tables}
+\else
+  \newcommand\listtablename{List of Tables}
+\fi
+\ifdefined\figurename
+  \renewcommand*\figurename{Figure}
+\else
+  \newcommand\figurename{Figure}
+\fi
+\ifdefined\tablename
+  \renewcommand*\tablename{Table}
+\else
+  \newcommand\tablename{Table}
+\fi
+}
+\@ifpackageloaded{float}{}{\usepackage{float}}
+\floatstyle{ruled}
+\@ifundefined{c@chapter}{\newfloat{codelisting}{h}{lop}}{\newfloat{codelisting}{h}{lop}[chapter]}
+\floatname{codelisting}{Listing}
+\newcommand*\listoflistings{\listof{codelisting}{List of Listings}}
+\makeatother
+\makeatletter
+\makeatother
+\makeatletter
+\@ifpackageloaded{caption}{}{\usepackage{caption}}
+\@ifpackageloaded{subcaption}{}{\usepackage{subcaption}}
+\makeatother
+
+\ifLuaTeX
+  \usepackage{selnolig}  % disable illegal ligatures
+\fi
+\usepackage{bookmark}
+
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\urlstyle{same} % disable monospaced font for URLs
+\hypersetup{
+  pdftitle={PS4 Andy Fan Will Sigal},
+  colorlinks=true,
+  linkcolor={blue},
+  filecolor={Maroon},
+  citecolor={Blue},
+  urlcolor={Blue},
+  pdfcreator={LaTeX via pandoc}}
+
+
+\title{PS4 Andy Fan Will Sigal}
+\author{}
+\date{}
+
+\begin{document}
+\maketitle
+
+\RecustomVerbatimEnvironment{verbatim}{Verbatim}{
+  showspaces = false,
+  showtabs = false,
+  breaksymbolleft={},
+  breaklines
+}
+
+
+\textbf{PS4:} Due Sat Nov 2 at 5:00PM Central. Worth 100 points.
+
+\subsection{Style Points (10 pts)}\label{style-points-10-pts}
+
+\subsection{Submission Steps (10 pts)}\label{submission-steps-10-pts}
+
+\subsection{Download and explore the Provider of Services (POS) file (10
+pts)}\label{download-and-explore-the-provider-of-services-pos-file-10-pts}
+
+(This file records all providers certified to bill Medicare and
+Medicaid. Each provider has a unique CMS certification number,
+consistent across different years)
+
+(The data dictionary is located at the bottom of the page as ``Provider
+of Services File- Hospital \& Non-Hospital Facilities Data Dictionary)
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\#\#\# SETUP }
+\ImportTok{import}\NormalTok{ pandas }\ImportTok{as}\NormalTok{ pd}
+\ImportTok{import}\NormalTok{ altair }\ImportTok{as}\NormalTok{ alt}
+\ImportTok{import}\NormalTok{ time}
+\ImportTok{import}\NormalTok{ os}
+\ImportTok{import}\NormalTok{ warnings }
+\NormalTok{warnings.filterwarnings(}\StringTok{\textquotesingle{}ignore\textquotesingle{}}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\paragraph{1. (Partner 1) This is a fairly large dataset and we won't be
+using most of the variables. Read through the rest of the problem set
+and look through the data dictionary to identify which variables you
+will need to complete the exercise, and use the tool on data.cms.gov
+into restrict to those variables (``Manage Columns'') before exporting
+(``Export''). Download this for 2016 and call it pos2016.csv. What are
+the variables you
+pulled?}\label{partner-1-this-is-a-fairly-large-dataset-and-we-wont-be-using-most-of-the-variables.-read-through-the-rest-of-the-problem-set-and-look-through-the-data-dictionary-to-identify-which-variables-you-will-need-to-complete-the-exercise-and-use-the-tool-on-data.cms.gov-into-restrict-to-those-variables-manage-columns-before-exporting-export.-download-this-for-2016-and-call-it-pos2016.csv.-what-are-the-variables-you-pulled}
+
+required variables:
+
+provider type code: PRVDR\_CTGRY\_CD
+
+subtype code: PRVDR\_CTGRY\_SBTYP\_CD
+
+CMS certification number: PRVDR\_NUM
+
+Termination code: PGM\_TRMNTN\_CD
+
+zip code: ZIP\_CD
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\#\#\# import data}
+\NormalTok{path1 }\OperatorTok{=} \StringTok{\textquotesingle{}d:}\CharTok{\textbackslash{}\textbackslash{}}\StringTok{UChicago}\CharTok{\textbackslash{}\textbackslash{}}\StringTok{Classes}\CharTok{\textbackslash{}\textbackslash{}}\StringTok{2024Qfall}\CharTok{\textbackslash{}\textbackslash{}}\StringTok{Programming Python}\CharTok{\textbackslash{}\textbackslash{}}\StringTok{problem{-}set{-}4{-}andy{-}fan{-}will{-}sigal}\CharTok{\textbackslash{}\textbackslash{}}\StringTok{pos2016.csv\textquotesingle{}}
+\NormalTok{df }\OperatorTok{=}\NormalTok{ pd.read\_csv(path1, encoding}\OperatorTok{=}\StringTok{"utf{-}8"}\NormalTok{, on\_bad\_lines}\OperatorTok{=}\StringTok{"skip"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\paragraph{2. (Partner 1) Import your pos2016.csv file. We want to focus
+on short-term hospitals. These are identified as facilities with
+provider type code 01 and subtype code 01. Subset your data to these
+facilities. How many hospitals are reported in this data? Does this
+number make sense? Cross-reference with other sources and cite the
+number you compared it to. If it differs, why do you think it could
+differ?}\label{partner-1-import-your-pos2016.csv-file.-we-want-to-focus-on-short-term-hospitals.-these-are-identified-as-facilities-with-provider-type-code-01-and-subtype-code-01.-subset-your-data-to-these-facilities.-how-many-hospitals-are-reported-in-this-data-does-this-number-make-sense-cross-reference-with-other-sources-and-cite-the-number-you-compared-it-to.-if-it-differs-why-do-you-think-it-could-differ}
+
+\begin{verbatim}
+a.how many hospitals, does it make sense
+
+b.cross ref. other sources, if it differs, why?
+\end{verbatim}
+
+\paragraph{3. (Partner 1) Repeat the previous 3 steps with 2017Q4,
+2018Q4, and 2019Q4 and then append them together. Plot the number of
+observations in your dataset by
+year.}\label{partner-1-repeat-the-previous-3-steps-with-2017q4-2018q4-and-2019q4-and-then-append-them-together.-plot-the-number-of-observations-in-your-dataset-by-year.}
+
+\paragraph{4. (Partner 1) Each hospital is identified by its CMS
+certification number. Plot the number of unique hospitals in your
+dataset per year. Compare this to your plot in the previous step. What
+does this tell you about the structure of the
+data?}\label{partner-1-each-hospital-is-identified-by-its-cms-certification-number.-plot-the-number-of-unique-hospitals-in-your-dataset-per-year.-compare-this-to-your-plot-in-the-previous-step.-what-does-this-tell-you-about-the-structure-of-the-data}
+
+\begin{verbatim}
+a.plot unique hospitals
+
+b.compare to previous step, what does this tell about data structure
+\end{verbatim}
+
+\subsection{Identify hospital closures in POS file (15 pts)
+(*)}\label{identify-hospital-closures-in-pos-file-15-pts}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+\item
+\item
+  \begin{enumerate}
+  \def\labelenumii{\alph{enumii}.}
+  \tightlist
+  \item
+  \item
+  \item
+  \end{enumerate}
+\end{enumerate}
+
+\subsection{Download Census zip code shapefile (10
+pt)}\label{download-census-zip-code-shapefile-10-pt}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  \begin{enumerate}
+  \def\labelenumii{\alph{enumii}.}
+  \tightlist
+  \item
+  \item
+  \end{enumerate}
+\item
+\end{enumerate}
+
+\subsection{Calculate zip code's distance to the nearest hospital (20
+pts)
+(*)}\label{calculate-zip-codes-distance-to-the-nearest-hospital-20-pts}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+\item
+\item
+\item
+  \begin{enumerate}
+  \def\labelenumii{\alph{enumii}.}
+  \tightlist
+  \item
+  \item
+  \item
+  \end{enumerate}
+\item
+  \begin{enumerate}
+  \def\labelenumii{\alph{enumii}.}
+  \tightlist
+  \item
+  \item
+  \item
+  \end{enumerate}
+\end{enumerate}
+
+\subsection{Effects of closures on access in Texas (15
+pts)}\label{effects-of-closures-on-access-in-texas-15-pts}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+\item
+\item
+\item
+\end{enumerate}
+
+\subsection{Reflecting on the exercise (10
+pts)}\label{reflecting-on-the-exercise-10-pts}
+
+
+
+
+\end{document}
