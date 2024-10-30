@@ -326,11 +326,19 @@ Termination code: PGM\_TRMNTN\_CD
 
 zip code: ZIP\_CD
 
+Date of termination: TRMNTN\_EXPRTN\_DT
+
+Facility name: FAC\_NAME
+
 \begin{Shaded}
 \begin{Highlighting}[]
-\CommentTok{\#\#\# import data}
-\NormalTok{path1 }\OperatorTok{=} \StringTok{\textquotesingle{}d:}\CharTok{\textbackslash{}\textbackslash{}}\StringTok{UChicago}\CharTok{\textbackslash{}\textbackslash{}}\StringTok{Classes}\CharTok{\textbackslash{}\textbackslash{}}\StringTok{2024Qfall}\CharTok{\textbackslash{}\textbackslash{}}\StringTok{Programming Python}\CharTok{\textbackslash{}\textbackslash{}}\StringTok{problem{-}set{-}4{-}andy{-}fan{-}will{-}sigal}\CharTok{\textbackslash{}\textbackslash{}}\StringTok{pos2016.csv\textquotesingle{}}
-\NormalTok{df }\OperatorTok{=}\NormalTok{ pd.read\_csv(path1, encoding}\OperatorTok{=}\StringTok{"utf{-}8"}\NormalTok{, on\_bad\_lines}\OperatorTok{=}\StringTok{"skip"}\NormalTok{)}
+\CommentTok{\#\#\# import data (default directory is just the repo)}
+
+\CommentTok{\#os.chdir(\textquotesingle{}/Users/willsigal/Documents/GitHub/problem{-}set{-}4{-}andy{-}fan{-}will{-}sigal\textquotesingle{}) \#will wd}
+
+\NormalTok{os.chdir(}\StringTok{\textquotesingle{}d:}\CharTok{\textbackslash{}\textbackslash{}}\StringTok{UChicago}\CharTok{\textbackslash{}\textbackslash{}}\StringTok{Classes}\CharTok{\textbackslash{}\textbackslash{}}\StringTok{2024Qfall}\CharTok{\textbackslash{}\textbackslash{}}\StringTok{Programming Python}\CharTok{\textbackslash{}\textbackslash{}}\StringTok{problem{-}set{-}4{-}andy{-}fan{-}will{-}sigal\textquotesingle{}}\NormalTok{) }\CommentTok{\#andy wd}
+
+\NormalTok{df\_2016 }\OperatorTok{=}\NormalTok{ pd.read\_csv(}\StringTok{\textquotesingle{}pos2016.csv\textquotesingle{}}\NormalTok{, encoding}\OperatorTok{=}\StringTok{"latin1"}\NormalTok{, on\_bad\_lines}\OperatorTok{=}\StringTok{"skip"}\NormalTok{)}
 \end{Highlighting}
 \end{Shaded}
 
@@ -342,16 +350,96 @@ number make sense? Cross-reference with other sources and cite the
 number you compared it to. If it differs, why do you think it could
 differ?}\label{partner-1-import-your-pos2016.csv-file.-we-want-to-focus-on-short-term-hospitals.-these-are-identified-as-facilities-with-provider-type-code-01-and-subtype-code-01.-subset-your-data-to-these-facilities.-how-many-hospitals-are-reported-in-this-data-does-this-number-make-sense-cross-reference-with-other-sources-and-cite-the-number-you-compared-it-to.-if-it-differs-why-do-you-think-it-could-differ}
 
-\begin{verbatim}
-a.how many hospitals, does it make sense
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\#\#\#subset to short term hositals}
+\NormalTok{df\_2016 }\OperatorTok{=}\NormalTok{ df\_2016[(df\_2016[}\StringTok{\textquotesingle{}PRVDR\_CTGRY\_SBTYP\_CD\textquotesingle{}}\NormalTok{] }\OperatorTok{==} \DecValTok{1}\NormalTok{) }\OperatorTok{\&}\NormalTok{ (df\_2016[}\StringTok{\textquotesingle{}PRVDR\_CTGRY\_CD\textquotesingle{}}\NormalTok{] }\OperatorTok{==} \DecValTok{1}\NormalTok{)]}
+\end{Highlighting}
+\end{Shaded}
 
-b.cross ref. other sources, if it differs, why?
+\begin{verbatim}
+a.There are 7275 short term hospitals reported in the data. This number at a glance makes sense nationwide.
+
+b.Looking at the Article by Jane Wishner, Patricia Solleveld, Robin Rudowitz, Julia Paradise, and Larisa Antonisse, they found "nearly 5,000 short-term, acute care hospitals in the United States". This is less than the data we have. It is possibly because some of the short-term hospitals in our dataset closed (they are temporary after all, and could have only been setup for less than a year)
 \end{verbatim}
 
 \paragraph{3. (Partner 1) Repeat the previous 3 steps with 2017Q4,
 2018Q4, and 2019Q4 and then append them together. Plot the number of
 observations in your dataset by
 year.}\label{partner-1-repeat-the-previous-3-steps-with-2017q4-2018q4-and-2019q4-and-then-append-them-together.-plot-the-number-of-observations-in-your-dataset-by-year.}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\#\#\# import data }
+\NormalTok{df\_2017 }\OperatorTok{=}\NormalTok{ pd.read\_csv(}\StringTok{\textquotesingle{}pos2017.csv\textquotesingle{}}\NormalTok{, encoding}\OperatorTok{=}\StringTok{"latin1"}\NormalTok{, on\_bad\_lines}\OperatorTok{=}\StringTok{"skip"}\NormalTok{)}
+
+\NormalTok{df\_2018 }\OperatorTok{=}\NormalTok{ pd.read\_csv(}\StringTok{\textquotesingle{}pos2018.csv\textquotesingle{}}\NormalTok{, encoding}\OperatorTok{=}\StringTok{"latin1"}\NormalTok{, on\_bad\_lines}\OperatorTok{=}\StringTok{"skip"}\NormalTok{)}
+
+\NormalTok{df\_2019 }\OperatorTok{=}\NormalTok{ pd.read\_csv(}\StringTok{\textquotesingle{}pos2019.csv\textquotesingle{}}\NormalTok{, encoding}\OperatorTok{=}\StringTok{"latin1"}\NormalTok{, on\_bad\_lines}\OperatorTok{=}\StringTok{"skip"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\#\#\#subset to short term hositals}
+\NormalTok{df\_2017 }\OperatorTok{=}\NormalTok{ df\_2017[(df\_2017[}\StringTok{\textquotesingle{}PRVDR\_CTGRY\_SBTYP\_CD\textquotesingle{}}\NormalTok{] }\OperatorTok{==} \DecValTok{1}\NormalTok{) }\OperatorTok{\&}\NormalTok{ (df\_2017[}\StringTok{\textquotesingle{}PRVDR\_CTGRY\_CD\textquotesingle{}}\NormalTok{] }\OperatorTok{==} \DecValTok{1}\NormalTok{)]}
+\NormalTok{df\_2018 }\OperatorTok{=}\NormalTok{ df\_2018[(df\_2018[}\StringTok{\textquotesingle{}PRVDR\_CTGRY\_SBTYP\_CD\textquotesingle{}}\NormalTok{] }\OperatorTok{==} \DecValTok{1}\NormalTok{) }\OperatorTok{\&}\NormalTok{ (df\_2018[}\StringTok{\textquotesingle{}PRVDR\_CTGRY\_CD\textquotesingle{}}\NormalTok{] }\OperatorTok{==} \DecValTok{1}\NormalTok{)]}
+\NormalTok{df\_2019 }\OperatorTok{=}\NormalTok{ df\_2019[(df\_2019[}\StringTok{\textquotesingle{}PRVDR\_CTGRY\_SBTYP\_CD\textquotesingle{}}\NormalTok{] }\OperatorTok{==} \DecValTok{1}\NormalTok{) }\OperatorTok{\&}\NormalTok{ (df\_2019[}\StringTok{\textquotesingle{}PRVDR\_CTGRY\_CD\textquotesingle{}}\NormalTok{] }\OperatorTok{==} \DecValTok{1}\NormalTok{)]}
+\end{Highlighting}
+\end{Shaded}
+
+The number of short-term hospitals in each of the years:
+
+2017: 7260 hospitals
+
+2018: 7277 hospitals
+
+2019: 7303 hospitals
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\#\#\# create new year columns}
+\NormalTok{df\_2016[}\StringTok{\textquotesingle{}year\textquotesingle{}}\NormalTok{] }\OperatorTok{=} \DecValTok{2016}
+\NormalTok{df\_2017[}\StringTok{\textquotesingle{}year\textquotesingle{}}\NormalTok{] }\OperatorTok{=} \DecValTok{2017}
+\NormalTok{df\_2018[}\StringTok{\textquotesingle{}year\textquotesingle{}}\NormalTok{] }\OperatorTok{=} \DecValTok{2018}
+\NormalTok{df\_2019[}\StringTok{\textquotesingle{}year\textquotesingle{}}\NormalTok{] }\OperatorTok{=} \DecValTok{2019}
+
+\CommentTok{\#\#\# append}
+\NormalTok{df }\OperatorTok{=}\NormalTok{ pd.concat([df\_2016, df\_2017, df\_2018, df\_2019], ignore\_index}\OperatorTok{=}\VariableTok{True}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\#\#\# altair plot}
+\NormalTok{df1\_3 }\OperatorTok{=}\NormalTok{ df.groupby(}\StringTok{\textquotesingle{}year\textquotesingle{}}\NormalTok{).size().reset\_index(name}\OperatorTok{=}\StringTok{\textquotesingle{}count\textquotesingle{}}\NormalTok{)}
+
+\NormalTok{chartQ1\_3 }\OperatorTok{=}\NormalTok{ alt.Chart(df1\_3).mark\_bar().encode(}
+\NormalTok{    x}\OperatorTok{=}\NormalTok{ alt.X(}\StringTok{\textquotesingle{}year:O\textquotesingle{}}\NormalTok{, axis}\OperatorTok{=}\NormalTok{alt.Axis(labelAngle}\OperatorTok{=}\DecValTok{90}\NormalTok{)),}
+\NormalTok{    y}\OperatorTok{=}\NormalTok{ alt.Y(}\StringTok{\textquotesingle{}count:Q\textquotesingle{}}\NormalTok{, title}\OperatorTok{=}\StringTok{\textquotesingle{}number of hospitals\textquotesingle{}}\NormalTok{, scale}\OperatorTok{=}\NormalTok{alt.Scale(domain}\OperatorTok{=}\NormalTok{[}\DecValTok{7000}\NormalTok{, }\DecValTok{7500}\NormalTok{], clamp}\OperatorTok{=}\VariableTok{True}\NormalTok{))}
+\NormalTok{).properties(}
+\NormalTok{    width}\OperatorTok{=}\DecValTok{400}\NormalTok{, }
+\NormalTok{    height}\OperatorTok{=}\DecValTok{200}\NormalTok{, }
+\NormalTok{    title}\OperatorTok{=}\StringTok{\textquotesingle{}Observations of Hospitals by Year\textquotesingle{}}  
+\NormalTok{)}
+\NormalTok{chartQ1\_3.save(}\StringTok{"chartQ1\_3.png"}\NormalTok{)}
+\NormalTok{chartQ1\_3}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+alt.Chart(...)
+\end{verbatim}
+
+\begin{figure}[H]
+
+{\centering \includegraphics{chartQ1_3.png}
+
+}
+
+\caption{Chart Q1.3}
+
+\end{figure}%
 
 \paragraph{4. (Partner 1) Each hospital is identified by its CMS
 certification number. Plot the number of unique hospitals in your
@@ -361,9 +449,46 @@ data?}\label{partner-1-each-hospital-is-identified-by-its-cms-certification-numb
 
 \begin{verbatim}
 a.plot unique hospitals
-
-b.compare to previous step, what does this tell about data structure
 \end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\#\#\# plot}
+\NormalTok{df1\_4 }\OperatorTok{=}\NormalTok{ df.groupby(}\StringTok{\textquotesingle{}year\textquotesingle{}}\NormalTok{)[}\StringTok{\textquotesingle{}PRVDR\_NUM\textquotesingle{}}\NormalTok{].nunique().reset\_index()}
+
+\NormalTok{chartQ1\_4 }\OperatorTok{=}\NormalTok{ alt.Chart(df1\_4).mark\_bar().encode(}
+\NormalTok{    x}\OperatorTok{=}\NormalTok{ alt.X(}\StringTok{\textquotesingle{}year:O\textquotesingle{}}\NormalTok{, axis}\OperatorTok{=}\NormalTok{alt.Axis(labelAngle}\OperatorTok{=}\DecValTok{90}\NormalTok{)),}
+\NormalTok{    y}\OperatorTok{=}\NormalTok{ alt.Y(}\StringTok{\textquotesingle{}PRVDR\_NUM:Q\textquotesingle{}}\NormalTok{, title}\OperatorTok{=}\StringTok{\textquotesingle{}number of unique hospitals\textquotesingle{}}\NormalTok{, scale}\OperatorTok{=}\NormalTok{alt.Scale(domain}\OperatorTok{=}\NormalTok{[}\DecValTok{7000}\NormalTok{, }\DecValTok{7500}\NormalTok{], clamp}\OperatorTok{=}\VariableTok{True}\NormalTok{))}
+\NormalTok{).properties(}
+\NormalTok{    width}\OperatorTok{=}\DecValTok{400}\NormalTok{, }
+\NormalTok{    height}\OperatorTok{=}\DecValTok{200}\NormalTok{, }
+\NormalTok{    title}\OperatorTok{=}\StringTok{\textquotesingle{}Unique Hospitals by Year\textquotesingle{}}  
+\NormalTok{)}
+\NormalTok{chartQ1\_4.save(}\StringTok{"chartQ1\_4.png"}\NormalTok{)}
+\NormalTok{chartQ1\_4}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+alt.Chart(...)
+\end{verbatim}
+
+\begin{figure}[H]
+
+{\centering \includegraphics{chartQ1_4.png}
+
+}
+
+\caption{Chart Q1.4}
+
+\end{figure}%
+
+\begin{verbatim}
+b.compare to previous step, what does this tell about data structure:
+\end{verbatim}
+
+The plots are identical. Which means each hospital is a unique
+observation, tallied each year.
 
 \subsection{Identify hospital closures in POS file (15 pts)
 (*)}\label{identify-hospital-closures-in-pos-file-15-pts}

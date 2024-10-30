@@ -83,11 +83,12 @@ Facility name:               FAC_NAME
 ```{python}
 ### import data (default directory is just the repo)
 
-#os.chdir('/Users/willsigal/Documents/GitHub/problem-set-4-andy-fan-will-sigal') #Your wd
-os.chdir('d:\\UChicago\\Classes\\2024Qfall\\Programming Python\\problem-set-4-andy-fan-will-sigal') #Your wd
+#os.chdir('/Users/willsigal/Documents/GitHub/problem-set-4-andy-fan-will-sigal') #will wd
+
+os.chdir('d:\\UChicago\\Classes\\2024Qfall\\Programming Python\\problem-set-4-andy-fan-will-sigal') #andy wd
+
 df_2016 = pd.read_csv('pos2016.csv', encoding="latin1", on_bad_lines="skip")
-os.chdir('/Users/willsigal/Documents/GitHub/problem-set-4-andy-fan-will-sigal') #Your wd
-df = pd.read_csv('pos2016.csv', encoding="utf-8", on_bad_lines="skip")
+
 
 ```
 
@@ -122,20 +123,68 @@ df_2019 = df_2019[(df_2019['PRVDR_CTGRY_SBTYP_CD'] == 1) & (df_2019['PRVDR_CTGRY
 
 ```
 
+The number of short-term hospitals in each of the years:
+
+2017: 7260 hospitals
+
+2018: 7277 hospitals
+
+2019: 7303 hospitals
+
 ```{python}
+### create new year columns
+df_2016['year'] = 2016
+df_2017['year'] = 2017
+df_2018['year'] = 2018
+df_2019['year'] = 2019
+
 ### append
 df = pd.concat([df_2016, df_2017, df_2018, df_2019], ignore_index=True)
 
 ```
 
+```{python}
+### altair plot
+df1_3 = df.groupby('year').size().reset_index(name='count')
+
+chartQ1_3 = alt.Chart(df1_3).mark_bar().encode(
+    x= alt.X('year:O', axis=alt.Axis(labelAngle=90)),
+    y= alt.Y('count:Q', title='number of hospitals', scale=alt.Scale(domain=[7000, 7500], clamp=True))
+).properties(
+    width=400, 
+    height=200, 
+    title='Observations of Hospitals by Year'  
+)
+chartQ1_3.save("chartQ1_3.png")
+chartQ1_3
+```
+
+![Chart Q1.3](chartQ1_3.png)
 
 #### 4. (Partner 1) Each hospital is identified by its CMS certification number. Plot the number of unique hospitals in your dataset per year. Compare this to your plot in the previous step. What does this tell you about the structure of the data?
 
     a.plot unique hospitals
 
-    b.compare to previous step, what does this tell about data structure
+```{python}
+### plot
+df1_4 = df.groupby('year')['PRVDR_NUM'].nunique().reset_index()
 
+chartQ1_4 = alt.Chart(df1_4).mark_bar().encode(
+    x= alt.X('year:O', axis=alt.Axis(labelAngle=90)),
+    y= alt.Y('PRVDR_NUM:Q', title='number of unique hospitals', scale=alt.Scale(domain=[7000, 7500], clamp=True))
+).properties(
+    width=400, 
+    height=200, 
+    title='Unique Hospitals by Year'  
+)
+chartQ1_4.save("chartQ1_4.png")
+chartQ1_4
+```
+![Chart Q1.4](chartQ1_4.png)
 
+    b.compare to previous step, what does this tell about data structure:
+    
+The plots are identical. Which means each hospital is a unique observation, tallied each year.
 
 
 ## Identify hospital closures in POS file (15 pts) (*)
