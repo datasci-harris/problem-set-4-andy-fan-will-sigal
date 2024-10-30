@@ -122,12 +122,38 @@ df_2019 = df_2019[(df_2019['PRVDR_CTGRY_SBTYP_CD'] == 1) & (df_2019['PRVDR_CTGRY
 
 ```
 
+The number of short-term hospitals in each of the years:
+
+2017: 7260 hospitals
+
+2018: 7277 hospitals
+
+2019: 7303 hospitals
+
 ```{python}
+### create new year columns
+df_2016['year'] = 2016
+df_2017['year'] = 2017
+df_2018['year'] = 2018
+df_2019['year'] = 2019
+
 ### append
 df = pd.concat([df_2016, df_2017, df_2018, df_2019], ignore_index=True)
 
 ```
 
+```{python}
+### altair plot
+chartQ1_4 = alt.Chart(df).mark_line().encode(
+    x= alt.X('year:C', axis=alt.Axis(labelAngle=45)),
+    y= alt.Y('count:Q', bin=alt.BinParams(maxbins=40), title='number of hospitals', sort='descending')
+).properties(
+    width=800, 
+    height=400, 
+    title='Short-Term Hospitals by Year'  
+)
+chartQ1_4
+```
 
 #### 4. (Partner 1) Each hospital is identified by its CMS certification number. Plot the number of unique hospitals in your dataset per year. Compare this to your plot in the previous step. What does this tell you about the structure of the data?
 
