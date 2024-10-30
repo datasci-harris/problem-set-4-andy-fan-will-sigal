@@ -74,11 +74,15 @@ Termination code:            PGM_TRMNTN_CD
 
 zip code:                    ZIP_CD
 
+Date of termination:         TRMNTN_EXPRTN_DT
+
+Facility name:               FAC_NAME
+
+
 
 ```{python}
-### import data
-path1 = 'd:\\UChicago\\Classes\\2024Qfall\\Programming Python\\problem-set-4-andy-fan-will-sigal\\pos2016.csv'
-df = pd.read_csv(path1, encoding="utf-8", on_bad_lines="skip")
+### import data (default directory is just the repo)
+df = pd.read_csv('pos2016.csv', encoding="utf-8", on_bad_lines="skip")
 
 ```
 
