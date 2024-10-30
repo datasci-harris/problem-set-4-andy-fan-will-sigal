@@ -82,7 +82,7 @@ Facility name:               FAC_NAME
 ```{python}
 ### import data (default directory is just the repo)
 os.chdir('/Users/willsigal/Documents/GitHub/problem-set-4-andy-fan-will-sigal') #Your wd
-df = pd.read_csv('pos2016.csv', encoding="utf-8", on_bad_lines="skip")
+df_2016 = pd.read_csv('pos2016.csv', encoding="latin1", on_bad_lines="skip")
 
 ```
 
