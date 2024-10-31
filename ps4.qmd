@@ -84,9 +84,9 @@ Facility name:               FAC_NAME
 ```{python}
 ### import data (default directory is just the repo)
 
-os.chdir('/Users/willsigal/Documents/GitHub/problem-set-4-andy-fan-will-sigal') #will wd
+#os.chdir('/Users/willsigal/Documents/GitHub/problem-set-4-andy-fan-will-sigal/Data') #will wd
 
-#os.chdir('d:\\UChicago\\Classes\\2024Qfall\\Programming Python\\problem-set-4-andy-fan-will-sigal') #andy wd
+os.chdir('d:\\UChicago\\Classes\\2024Qfall\\Programming Python\\problem-set-4-andy-fan-will-sigal\\Data') #andy wd
 
 df_2016 = pd.read_csv('pos2016.csv', encoding="latin1", on_bad_lines="skip")
 
@@ -109,11 +109,8 @@ df_2016 = df_2016[(df_2016['PRVDR_CTGRY_SBTYP_CD'] == 1) & (df_2016['PRVDR_CTGRY
 ```{python}
 ### import data 
 df_2017 = pd.read_csv('pos2017.csv', encoding="latin1", on_bad_lines="skip")
-
 df_2018 = pd.read_csv('pos2018.csv', encoding="latin1", on_bad_lines="skip")
-
 df_2019 = pd.read_csv('pos2019.csv', encoding="latin1", on_bad_lines="skip")
-
 ```
 
 ```{python}
@@ -121,7 +118,6 @@ df_2019 = pd.read_csv('pos2019.csv', encoding="latin1", on_bad_lines="skip")
 df_2017 = df_2017[(df_2017['PRVDR_CTGRY_SBTYP_CD'] == 1) & (df_2017['PRVDR_CTGRY_CD'] == 1)]
 df_2018 = df_2018[(df_2018['PRVDR_CTGRY_SBTYP_CD'] == 1) & (df_2018['PRVDR_CTGRY_CD'] == 1)]
 df_2019 = df_2019[(df_2019['PRVDR_CTGRY_SBTYP_CD'] == 1) & (df_2019['PRVDR_CTGRY_CD'] == 1)]
-
 ```
 
 The number of short-term hospitals in each of the years:
@@ -141,7 +137,6 @@ df_2019['year'] = 2019
 
 ### append
 df = pd.concat([df_2016, df_2017, df_2018, df_2019], ignore_index=True)
-
 ```
 
 ```{python}
@@ -181,6 +176,7 @@ chartQ1_4 = alt.Chart(df1_4).mark_bar().encode(
 chartQ1_4.save("chartQ1_4.png")
 chartQ1_4
 ```
+
 ![Chart Q1.4](chartQ1_4.png)
 
     b.compare to previous step, what does this tell about data structure:
@@ -262,21 +258,66 @@ Navigate to the Census shapefiles (link), select “gz_2010_us_860_00_500k.zip�
 
 #### 1. (Partner 1) This is non-tabular data. 1a. What are the five file types and what type of information is in each file? 1b. It will be useful going forward to have a sense going forward of which files are big versus small. After unzipping, how big is each of the datasets?
 
-    a.
+    a.The 5 file types are: 
+    1.dbf file--which is a table that stores attributes of the geometries. 
+    2.prj file--stores the coordinate system information; used by ArcGIS.
+    3.shp file--The main file that stores the feature geometry (by far the largest, >800mb in this instance)
+    4.shx file--the index file for the geometries
+    5.xml file--is metadata for ArcGIS that has info about the shapefile itself
 
-    b. 
+    b. The size of the files:
+    1.dbf file--6275kb
+    2.prj file--1kb
+    3.shp file--817,915kb
+    4.shx file--259kb
+    5.xml file--16kb
 
 #### 2. (Partner 1) Load the zip code shapefile and restrict to Texas zip codes. (Hint: you can identify which state a zip code is in using the first 2-3 numbers in the zip code (Wikipedia link). Then calculate the number of hospitals per zip code in 2016 based on the cleaned POS file from the previous step. Plot a choropleth of the number of hospitals by zip code in Texas.
 
+```{python}
+import geopandas as gpd
+#os.chdir('/Users/willsigal/Documents/GitHub/problem-set-4-andy-fan-will-sigal/Shapefiles') #will wd shapefiles
 
+os.chdir('d:\\UChicago\\Classes\\2024Qfall\\Programming Python\\problem-set-4-andy-fan-will-sigal\\Shapefiles') #andy wd shapefiles
+
+zips_all = gpd.read_file('gz_2010_us_860_00_500k.shp')
+gpd_texas = pd.DataFrame(zips_all)
+#texas zips: 75xxx-79xxx, 885xx, (also 73301 but for IRS only)
+gpd_texas = gpd_texas[gpd_texas['ZCTA5'].str.startswith(('75','76','77','78','79','885'))]
+```
+
+```{python}
+### number of hospitals per zip:
+df_2016_tx = df_2016
+df_2016_tx['ZIP_CD'] = df_2016_tx['ZIP_CD'].astype(int)
+df_2016_tx['ZIP_CD'] = df_2016_tx['ZIP_CD'].astype(str)
+df_2016_tx = df_2016_tx[df_2016_tx['ZIP_CD'].isin(gpd_texas['ZCTA5'])]
+
+tx_zip = df_2016_tx['ZIP_CD'].value_counts().reindex(gpd_texas['ZCTA5']).fillna(0).astype(int)
+tx_zip = tx_zip.reset_index()
+
+#asked chatgpt how to find the number of observations for each zip code in df1 using observations from df2
+```
+
+```{python}
+###Plot a choropleth of the number of hospitals by zip code in Texas.
+#append count to gpd
+zips_texas = zips_all[zips_all['ZCTA5'].str.startswith(('75','76','77','78','79','885'))]
+zips_texas = pd.merge(zips_texas, tx_zip, on='ZCTA5', how='left')
+
+#create area column in km2
+zips_texas["area_km2"] = zips_texas.area / 1000000 
+zips_texas[['ZCTA5', 'count', 'area_km2', 'geometry']].head()
+
+zips_texas.plot(column="count", legend=True)
+```
+
+*ZCTA5 is the Census 5 digit zip code tabulation area, and will be considered the zip code as no other variable is avaliable.
 
 ## Calculate zip code’s distance to the nearest hospital (20 pts) (*)
 
 #### 1. (Partner 2) Create a GeoDataFrame for the centroid of each zip code nationally: zips_all_centroids. What are the dimensions of the resulting GeoDataFrame and what do each of the columns mean?
 ```{python}
-import geopandas as gpd
-os.chdir('/Users/willsigal/Documents/GitHub/problem-set-4-andy-fan-will-sigal/Shapefiles')
-zips_all = gpd.read_file('gz_2010_us_860_00_500k.shp')
 zips_all_centroids = zips_all
 zips_all_centroids['geometry'] = zips_all['geometry'].centroid
 zips_all_centroids.shape
