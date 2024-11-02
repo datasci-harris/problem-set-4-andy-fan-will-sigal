@@ -252,8 +252,8 @@ AF WS
   \textbf{\href{https://docs.google.com/forms/d/185usrCREQaUbvAXpWhChkjghdGgmAZXA3lPWpXLLsts/edit}{here}}''
   (1 point)
 \item
-  Late coins used this pset: (Andy:0); (will:0) Late coins left after
-  submission: (Andy: 3) ; (will: 4)
+  Late coins used this pset: (Andy:0); (Will:0) Late coins left after
+  submission: (Andy: 3) ; (Will: 4)
 \item
   Knit your \texttt{ps4.qmd} to an PDF file to make \texttt{ps4.pdf},
 
@@ -726,10 +726,6 @@ Texas.}\label{partner-1-load-the-zip-code-shapefile-and-restrict-to-texas-zip-co
 \NormalTok{zips\_texas[[}\StringTok{\textquotesingle{}ZCTA5\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}count\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}area\_km2\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}geometry\textquotesingle{}}\NormalTok{]].head()}
 
 \NormalTok{zips\_texas.plot(column}\OperatorTok{=}\StringTok{"count"}\NormalTok{, legend}\OperatorTok{=}\VariableTok{True}\NormalTok{)}
-
-\CommentTok{\#chartQ3\_2 = zips\_texas.plot(column="count", legend=True)}
-\CommentTok{\#chartQ3\_2.save("chartQ3\_2.png")}
-\CommentTok{\#chartQ3\_2}
 \end{Highlighting}
 \end{Shaded}
 
@@ -749,7 +745,6 @@ mean?}\label{partner-2-create-a-geodataframe-for-the-centroid-of-each-zip-code-n
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\NormalTok{zips\_all }\OperatorTok{=}\NormalTok{ gpd.read\_file(}\StringTok{\textquotesingle{}gz\_2010\_us\_860\_00\_500k.shp\textquotesingle{}}\NormalTok{)}
 \NormalTok{zips\_all\_centroids }\OperatorTok{=}\NormalTok{ zips\_all}
 \NormalTok{zips\_all\_centroids[}\StringTok{\textquotesingle{}geometry\textquotesingle{}}\NormalTok{] }\OperatorTok{=}\NormalTok{ zips\_all[}\StringTok{\textquotesingle{}geometry\textquotesingle{}}\NormalTok{].centroid}
 \NormalTok{zips\_all\_centroids.shape}
@@ -913,7 +908,7 @@ a. This is a computationally-intensive join. Before attempting to do the entire 
 
 \begin{verbatim}
 Time taken for 10 ZIP codes was 0.09 seconds
-it will take approx. 17.280179858207703 seconds to join the whole df
+it will take approx. 16.603901624679565 seconds to join the whole df
 \end{verbatim}
 
 \begin{verbatim}
@@ -941,7 +936,7 @@ b. Now try doing the full calculation and time how long it takes. How close is i
 \end{Shaded}
 
 \begin{verbatim}
-the whole calculation took 15.313009977340698 this is very close to my calculation
+the whole calculation took 15.393359661102295 this is very close to my calculation
 \end{verbatim}
 
 \begin{verbatim}
@@ -1040,11 +1035,61 @@ Texas-- that is, those with at least one closure in 2016-2019. Display a
 table of the number of zip codes vs.~the number of closures they
 experienced.}\label{partner-1-using-the-corrected-hospital-closures-dataset-from-the-first-section-create-a-list-of-directly-affected-zip-codes-in-texas-that-is-those-with-at-least-one-closure-in-2016-2019.-display-a-table-of-the-number-of-zip-codes-vs.-the-number-of-closures-they-experienced.}
 
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df5 }\OperatorTok{=}\NormalTok{ df[df[}\StringTok{\textquotesingle{}TRMNTN\_EXPRTN\_DT\textquotesingle{}}\NormalTok{].notna()]}
+\NormalTok{df5[}\StringTok{\textquotesingle{}ZIP\_CD\textquotesingle{}}\NormalTok{] }\OperatorTok{=}\NormalTok{ df5[}\StringTok{\textquotesingle{}ZIP\_CD\textquotesingle{}}\NormalTok{].astype(}\BuiltInTok{int}\NormalTok{)}
+\NormalTok{df5[}\StringTok{\textquotesingle{}ZIP\_CD\textquotesingle{}}\NormalTok{] }\OperatorTok{=}\NormalTok{ df5[}\StringTok{\textquotesingle{}ZIP\_CD\textquotesingle{}}\NormalTok{].astype(}\BuiltInTok{str}\NormalTok{)}
+\NormalTok{Q5\_1\_closures }\OperatorTok{=}\NormalTok{ df5[}\StringTok{\textquotesingle{}ZIP\_CD\textquotesingle{}}\NormalTok{].value\_counts().rename(}\StringTok{"number\_closures"}\NormalTok{)}
+\NormalTok{Q5\_1\_closures}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+ZIP_CD
+79902    26
+70115    24
+71101    24
+80218    24
+90301    20
+         ..
+41041     1
+70503     1
+20707     1
+49058     1
+77090     1
+Name: number_closures, Length: 3403, dtype: int64
+\end{verbatim}
+
 \paragraph{2.(Partner 1) Plot a choropleth of which Texas zip codes were
 directly affected by a closure in 2016-2019-- there was at least one
 closure within the zip code. How many directly affected zip codes are
 there in
 Texas?}\label{partner-1-plot-a-choropleth-of-which-texas-zip-codes-were-directly-affected-by-a-closure-in-2016-2019-there-was-at-least-one-closure-within-the-zip-code.-how-many-directly-affected-zip-codes-are-there-in-texas}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{Q5\_1\_closures }\OperatorTok{=}\NormalTok{ Q5\_1\_closures.reset\_index()}
+\NormalTok{Q5\_1\_closures.columns }\OperatorTok{=}\NormalTok{ [}\StringTok{\textquotesingle{}ZCTA5\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}number\_closures\textquotesingle{}}\NormalTok{]}
+
+\NormalTok{zips\_texas5\_2 }\OperatorTok{=}\NormalTok{ zips\_texas}
+\NormalTok{zips\_texas5\_2 }\OperatorTok{=}\NormalTok{ zips\_texas5\_2.merge(Q5\_1\_closures, on}\OperatorTok{=}\StringTok{\textquotesingle{}ZCTA5\textquotesingle{}}\NormalTok{, how}\OperatorTok{=}\StringTok{\textquotesingle{}left\textquotesingle{}}\NormalTok{)}
+\NormalTok{zips\_texas5\_2[}\StringTok{\textquotesingle{}number\_closures\textquotesingle{}}\NormalTok{] }\OperatorTok{=}\NormalTok{ zips\_texas5\_2[}\StringTok{\textquotesingle{}number\_closures\textquotesingle{}}\NormalTok{].fillna(}\DecValTok{0}\NormalTok{)}
+\BuiltInTok{print}\NormalTok{((zips\_texas5\_2[}\StringTok{\textquotesingle{}number\_closures\textquotesingle{}}\NormalTok{] }\OperatorTok{\textgreater{}} \DecValTok{0}\NormalTok{).}\BuiltInTok{sum}\NormalTok{())}
+
+\CommentTok{\#\#\#plot}
+\NormalTok{zips\_texas5\_2.plot(column}\OperatorTok{=}\StringTok{"number\_closures"}\NormalTok{, legend}\OperatorTok{=}\VariableTok{True}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+334
+\end{verbatim}
+
+\includegraphics{ps4_files/figure-pdf/cell-33-output-2.pdf}
+
+There are 334 Zip codes in Texas that were affected by at least 1
+closure between 2017-2019
 
 \paragraph{3. (Partner 1) Then identify all the indirectly affected zip
 codes: Texas zip codes within a 10-mile radius of the directly affected
@@ -1054,11 +1099,42 @@ spatial join with the overall Texas zip code shapefile. How many
 indirectly affected zip codes are there in
 Texas?}\label{partner-1-then-identify-all-the-indirectly-affected-zip-codes-texas-zip-codes-within-a-10-mile-radius-of-the-directly-affected-zip-codes.-to-do-so-first-create-a-geodataframe-of-the-directly-affected-zip-codes.-then-create-a-10-mile-buffer-around-them.-then-do-a-spatial-join-with-the-overall-texas-zip-code-shapefile.-how-many-indirectly-affected-zip-codes-are-there-in-texas}
 
+\begin{Shaded}
+\begin{Highlighting}[]
+\ImportTok{import}\NormalTok{ matplotlib.pyplot }\ImportTok{as}\NormalTok{ plt}
+\CommentTok{\#\#\# gdf of directly affected zips}
+\NormalTok{zips\_texas5\_3 }\OperatorTok{=}\NormalTok{ zips\_texas5\_2[zips\_texas5\_2[}\StringTok{\textquotesingle{}number\_closures\textquotesingle{}}\NormalTok{] }\OperatorTok{\textgreater{}} \DecValTok{0}\NormalTok{]}
+\CommentTok{\#\#\# create buffer}
+\NormalTok{zips\_texas5\_3.crs }\CommentTok{\#check distance units.   }\AlertTok{\#\#\#}\CommentTok{ 1 degree latitude =69 miles, therefore 1 mile =  1/69 degrees = 0.01449}
+\NormalTok{zips\_texas5\_3[}\StringTok{\textquotesingle{}geometry\textquotesingle{}}\NormalTok{] }\OperatorTok{=}\NormalTok{ zips\_texas5\_3.geometry.}\BuiltInTok{buffer}\NormalTok{(}\FloatTok{0.01449}\NormalTok{)}
+
+\CommentTok{\#\#\#join}
+\NormalTok{zips\_texas5\_3\_joined }\OperatorTok{=}\NormalTok{ gpd.sjoin(zips\_texas5\_2, zips\_texas5\_3, how}\OperatorTok{=}\StringTok{\textquotesingle{}inner\textquotesingle{}}\NormalTok{)}
+
+\NormalTok{zips\_texas5\_3\_joined[}\StringTok{\textquotesingle{}ZCTA5\_left\textquotesingle{}}\NormalTok{].nunique()}
+
+\CommentTok{\#asked chatgpt "after conducting a spacial left join, how to find number of overlapping areas, given a buffer on the right geometries"}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+1518
+\end{verbatim}
+
+There are 1518 total affected zip codes, and 1184 directly affected zip
+codes in Texas.
+
 \paragraph{4.(Partner 1) Make a choropleth plot of the Texas zip codes
 with a different color for each of the 3 categories: directly affected
 by a closure, within 10 miles of closure but not directly affected, or
 not
 affected.}\label{partner-1-make-a-choropleth-plot-of-the-texas-zip-codes-with-a-different-color-for-each-of-the-3-categories-directly-affected-by-a-closure-within-10-miles-of-closure-but-not-directly-affected-or-not-affected.}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\#df\_test = pd.DataFrame(zips\_texas5\_3\_joined)}
+\end{Highlighting}
+\end{Shaded}
 
 \subsection{Reflecting on the exercise (10
 pts)}\label{reflecting-on-the-exercise-10-pts}
