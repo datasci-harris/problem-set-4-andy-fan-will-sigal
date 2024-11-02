@@ -33,7 +33,7 @@ include-before-body:
 AF    WS
 
 5. "I have uploaded the names of anyone else other than my partner and I worked with on the problem set **[here](https://docs.google.com/forms/d/185usrCREQaUbvAXpWhChkjghdGgmAZXA3lPWpXLLsts/edit)**"  (1 point)
-6. Late coins used this pset: (Andy:0); (Will:0) Late coins left after submission: (Andy: 3) ; (Will: 4)
+6. Late coins used this pset: (Andy:1); (Will:1) Late coins left after submission: (Andy: 2) ; (Will: 3)
 7. Knit your `ps4.qmd` to an PDF file to make `ps4.pdf`, 
     * The PDF should not be more than 25 pages. Use `head()` and re-size figures when appropriate. 
 8. (Partner 1): push  `ps4.qmd` and `ps4.pdf` to your github repo.
@@ -58,6 +58,7 @@ import os
 import warnings
 import geopandas as gpd
 import numpy as np
+import matplotlib.pyplot as plt
 warnings.filterwarnings('ignore')
 
 ```
@@ -85,12 +86,11 @@ Facility name:               FAC_NAME
 ```{python}
 ### import data (default directory is just the repo)
 
-os.chdir('/Users/willsigal/Desktop') #will wd
+#os.chdir('/Users/willsigal/Desktop') #will wd
 
-#os.chdir('d:\\UChicago\\Classes\\2024Qfall\\Programming Python\\problem-set-4-andy-fan-will-sigal\\Data') #andy wd
+os.chdir('d:\\UChicago\\Classes\\2024Qfall\\Programming Python\\problem-set-4-andy-fan-will-sigal\\Data') #andy wd
 
-df_2016 = pd.read_csv('pos2016.csv', encoding="latin1", on_bad_lines="skip")
-
+df = pd.read_csv('pos2016.csv', encoding="latin1", on_bad_lines="skip")
 
 ```
 
@@ -98,10 +98,12 @@ df_2016 = pd.read_csv('pos2016.csv', encoding="latin1", on_bad_lines="skip")
 
 ```{python}
 ###subset to short term hositals
+df_2016 = df.copy()
 df_2016 = df_2016[(df_2016['PRVDR_CTGRY_SBTYP_CD'] == 1) & (df_2016['PRVDR_CTGRY_CD'] == 1)]
+len(df_2016)
 ```
 
-    a.There are 7275 short term hospitals reported in the data. This number at a glance makes sense nationwide.
+    a.There are 7245 short term hospitals reported in the data. This number at a glance makes sense nationwide.
 
     b.Looking at the Article by Jane Wishner, Patricia Solleveld, Robin Rudowitz, Julia Paradise, and Larisa Antonisse, they found "nearly 5,000 short-term, acute care hospitals in the United States". This is less than the data we have. It is possibly because some of the short-term hospitals in our dataset closed (they are temporary after all, and could have only been setup for less than a year)
 
@@ -137,14 +139,14 @@ df_2018['year'] = 2018
 df_2019['year'] = 2019
 
 ### append
-df = pd.concat([df_2016, df_2017, df_2018, df_2019], ignore_index=True)
+df1_3 = pd.concat([df_2016, df_2017, df_2018, df_2019], ignore_index=True)
 ```
 
 ```{python}
 ### altair plot
-df1_3 = df.groupby('year').size().reset_index(name='count')
+df1_3_p = df1_3.groupby('year').size().reset_index(name='count')
 
-chartQ1_3 = alt.Chart(df1_3).mark_bar().encode(
+chartQ1_3 = alt.Chart(df1_3_p).mark_bar().encode(
     x= alt.X('year:O', axis=alt.Axis(labelAngle=90)),
     y= alt.Y('count:Q', title='number of hospitals', scale=alt.Scale(domain=[7000, 7500], clamp=True))
 ).properties(
@@ -164,7 +166,7 @@ chartQ1_3
 
 ```{python}
 ### plot
-df1_4 = df.groupby('year')['PRVDR_NUM'].nunique().reset_index()
+df1_4 = df1_3.groupby('year')['PRVDR_NUM'].nunique().reset_index()
 
 chartQ1_4 = alt.Chart(df1_4).mark_bar().encode(
     x= alt.X('year:O', axis=alt.Axis(labelAngle=90)),
@@ -189,7 +191,6 @@ The plots are identical. Which means each hospital is a unique observation, tall
 
 We will now use the 2016-2019 files to identify hospital closures nationally. A hospital issuspected to have closed if its Termination Code in the POS file lists them as an “Active Provider” in 2016 and then they are either not active or do not appear in the data at all in a subsequent year.
 
-#### 1. (Partner 2) Use this definition to create a list of all hospitals that were active in 2016 that were suspected to have closed by 2019. Record the facility name and zip of each hospital as well as the year of suspected closure (when they become terminated or disappear from the data). How many hospitals are there that fit this definition?
 
 #### 1. (Partner 2) Use this definition to create a list of all hospitals that were active in 2016 that were suspected to have closed by 2019. Record the facility name and zip of each hospital as well as the year of suspected closure (when they become terminated or disappear from the data). How many hospitals are there that fit this definition?
 
@@ -221,7 +222,7 @@ print(f"Number of suspected hospital closures: {len(closed_hospitals)}")
 print(closed_hospitals[["FAC_NAME", "PRVDR_NUM", "ZIP_CD", "Year_Closed"]].sort_values(by="FAC_NAME").head(10))
 ```
 
-
+Number of suspected hospital closures suspecred: 174
 
 #### 2. (Partner 2) Sort this list of hospitals by name and report the names and year of suspected closure for the first 10 rows.
 ```{python}
@@ -234,7 +235,7 @@ first_ten_closures
 
     a. Among the suspected closures, how many hospitals fit this definition of potentially being a merger/acquisition?
 ```{python}
-active_hospitals_count = df[df['PGM_TRMNTN_CD'] == 0].groupby(['ZIP_CD', 'year']).size().reset_index(name='active_count')
+active_hospitals_count = df1_3[df1_3['PGM_TRMNTN_CD'] == 0].groupby(['ZIP_CD', 'year']).size().reset_index(name='active_count')
 
 #count hospitals by zip each year
 zip_year_counts = active_hospitals_count.pivot(index='ZIP_CD', columns='year', values='active_count').fillna(0)
@@ -265,17 +266,21 @@ merger_count = potential_mergers.shape[0]
 print(f"Number of potential mergers: {merger_count}")
 ```
 
+148 potential mergers
+
     b. After correcting for this, how many hospitals do you have left?
 ```{python}
 true_closures = closed_hospitals[~closed_hospitals.index.isin(potential_mergers.index)]
 remaining_closures_count = true_closures.shape[0]
-
 remaining_closures_count
+print(f"Number of potential mergers corrected for: {merger_count}")
 ```
+
+only 26 hosptials are closures after accounting for re-appearances
 
     c. Sort this list of corrected hospital closures by name and report the first 10 rows.
 ```{python}
-correct_closure_df = true_closures.sort_values(by='FAC_NAME').head(10)[['FAC_NAME', 'ZIP_CD', 'Year_Closed']]
+correct_closure_df = true_closures.sort_values(by='FAC_NAME')[['FAC_NAME', 'ZIP_CD', 'Year_Closed']]
 
 correct_closure_df.head(10)
 ```
@@ -304,9 +309,9 @@ Navigate to the Census shapefiles (link), select “gz_2010_us_860_00_500k.zip�
 
 ```{python}
 import geopandas as gpd
-os.chdir('/Users/willsigal/Desktop/Shapefiles') #will wd shapefiles
+#os.chdir('/Users/willsigal/Desktop/Shapefiles') #will wd shapefiles
 
-#os.chdir('d:\\UChicago\\Classes\\2024Qfall\\Programming Python\\problem-set-4-andy-fan-will-sigal\\Shapefiles') #andy wd shapefiles
+os.chdir('d:\\UChicago\\Classes\\2024Qfall\\Programming Python\\problem-set-4-andy-fan-will-sigal\\Shapefiles') #andy wd shapefiles
 
 zips_all = gpd.read_file('gz_2010_us_860_00_500k.shp')
 gpd_texas = pd.DataFrame(zips_all)
@@ -328,16 +333,21 @@ tx_zip = tx_zip.reset_index()
 ```
 
 ```{python}
-###Plot a choropleth of the number of hospitals by zip code in Texas.
-#append count to gpd
+###append count to gpd
 zips_texas = zips_all[zips_all['ZCTA5'].str.startswith(('75','76','77','78','79','885'))]
 zips_texas = pd.merge(zips_texas, tx_zip, on='ZCTA5', how='left')
 
-#create area column in km2
+###create area column in km2
 zips_texas["area_km2"] = zips_texas.area / 1000000 
 zips_texas[['ZCTA5', 'count', 'area_km2', 'geometry']].head()
 
-zips_texas.plot(column="count", legend=True)
+###Plot a choropleth of the number of hospitals by zip code in Texas.
+fig, ax = plt.subplots(figsize=(12,8))
+zips_texas.plot(column="count", legend=True, legend_kwds={'label': 'number of hospitals'},ax=ax)
+ax.set_title("Short-term Hospitals in Texas by Zip-code")
+plt.xlabel("Longitude")
+plt.ylabel("Latitude")
+plt.show()
 ```
 
 *ZCTA5 is the Census 5 digit zip code tabulation area, and will be considered the zip code as no other variable is avaliable.
@@ -348,9 +358,11 @@ zips_texas.plot(column="count", legend=True)
 ```{python}
 zips_all_centroids = zips_all
 zips_all_centroids['geometry'] = zips_all['geometry'].centroid
-zips_all_centroids.shape
+print(zips_all_centroids.shape)
+print(zips_all_centroids.columns)
 ```
 
+*(ZCTA5 refers to the zip code)
 
 ```{python}
 zips_all_centroids.columns
@@ -392,7 +404,7 @@ zips_texas_borderstates_centroids['ZCTA5'].head
 ```
 
 ```{python}
-hospitals_2016 = df[(df['year'] == 2016) & (df['PGM_TRMNTN_CD'] == 0)]
+hospitals_2016 = df1_3[(df1_3['year'] == 2016) & (df1_3['PGM_TRMNTN_CD'] == 0)]
 hospitals_2016['ZIP_CD'] = hospitals_2016['ZIP_CD'].astype(int).astype(str)
 
 zips_texas_borderstates_centroids['ZCTA5'] = zips_texas_borderstates_centroids['ZCTA5']
@@ -508,41 +520,54 @@ zips_texas_centroids.plot(
 #### 1. (Partner 1) Using the corrected hospital closures dataset from the first section, create a list of directly affected zip codes in Texas– that is, those with at least one closure in 2016-2019. Display a table of the number of zip codes vs. the number of closures they experienced. 
 
 ```{python}
-df5 = df[df['TRMNTN_EXPRTN_DT'].notna()]
+### Using the corrected closures df (accounting for mergers) from Q2
+df5 = correct_closure_df
 df5['ZIP_CD'] = df5['ZIP_CD'].astype(int)
 df5['ZIP_CD'] = df5['ZIP_CD'].astype(str)
+df5 = df5[df5['ZIP_CD'].str.startswith(('75','76','77','78','79','885'))]
 Q5_1_closures = df5['ZIP_CD'].value_counts().rename("number_closures")
 Q5_1_closures
+
 ```
+
+(4 closures in texas when accounted for correct closures)
 
 #### 2.(Partner 1) Plot a choropleth of which Texas zip codes were directly affected by a closure in 2016-2019– there was at least one closure within the zip code. How many directly affected zip codes are there in Texas? 
 
 ```{python}
+### makes df from correct closures in Q5.1, rename zip column ZATC5
 Q5_1_closures = Q5_1_closures.reset_index()
 Q5_1_closures.columns = ['ZCTA5', 'number_closures']
 
+### uses filtered shapefile with only texas zips
 zips_texas5_2 = zips_texas
 zips_texas5_2 = zips_texas5_2.merge(Q5_1_closures, on='ZCTA5', how='left')
 zips_texas5_2['number_closures'] = zips_texas5_2['number_closures'].fillna(0)
 print((zips_texas5_2['number_closures'] > 0).sum())
 
 ###plot
-zips_texas5_2.plot(column="number_closures", legend=True)
+#zips_texas5_2.plot(column="number_closures", legend=True)
+
+fig, ax = plt.subplots(1,1, figsize=(12,8))
+zips_texas5_2.plot(column="number_closures", cmap='OrRd', legend=True, ax=ax)
+ax.set_title("Directly Effected Zip Codes with Hospital closures 2016-19")
+plt.xlabel("Longitude")
+plt.ylabel("Latitude")
+plt.show
 ```
 
-There are 334 Zip codes in Texas that were affected by at least 1 closure between 2017-2019
+There are 4 Zip codes in Texas that were affected by at least 1 closure between 2017-2019
 
 #### 3. (Partner 1) Then identify all the indirectly affected zip codes: Texas zip codes within a 10-mile radius of the directly affected zip codes. To do so, first create a GeoDataFrame of the directly affected zip codes. Then create a 10-mile buffer around them. Then, do a spatial join with the overall Texas zip code shapefile. How many indirectly affected zip codes are there in Texas? 
 
 ```{python}
-import matplotlib.pyplot as plt
 ### gdf of directly affected zips
 zips_texas5_3 = zips_texas5_2[zips_texas5_2['number_closures'] > 0]
 ### create buffer
 zips_texas5_3.crs #check distance units.   ### 1 degree latitude =69 miles, therefore 1 mile =  1/69 degrees = 0.01449
 zips_texas5_3['geometry'] = zips_texas5_3.geometry.buffer(0.01449)
 
-###join
+###join with gpd with all texas zips (zips_texas5_2)
 zips_texas5_3_joined = gpd.sjoin(zips_texas5_2, zips_texas5_3, how='inner')
 
 zips_texas5_3_joined['ZCTA5_left'].nunique()
@@ -551,12 +576,13 @@ zips_texas5_3_joined['ZCTA5_left'].nunique()
 
 ```
 
-There are 1518 total affected zip codes, and 1184 directly affected zip codes in Texas.
+There are 23 total affected zip codes, (previoulsy counted 4 direct effect) and thus 19 indirectly affected zip codes in Texas.
 
 #### 4.(Partner 1) Make a choropleth plot of the Texas zip codes with a different color for each of the 3 categories: directly affected by a closure, within 10 miles of closure but not directly affected, or not affected. 
 
 ```{python}
-#df_test = pd.DataFrame(zips_texas5_3_joined)
+###column for affected status
+zips_texas5_3_joined['affected_status'] = 0 
 ```
 
 ## Reflecting on the exercise (10 pts) 
