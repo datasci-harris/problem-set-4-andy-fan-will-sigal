@@ -571,23 +571,46 @@ zips_texas5_3['geometry'] = zips_texas5_3.geometry.buffer(0.01449)
 zips_texas5_3_joined = gpd.sjoin(zips_texas5_2, zips_texas5_3, how='inner')
 
 zips_texas5_3_joined['ZCTA5_left'].nunique()
-
 #asked chatgpt "after conducting a spacial left join, how to find number of overlapping areas, given a buffer on the right geometries"
 
 ```
+
+
 
 There are 23 total affected zip codes, (previoulsy counted 4 direct effect) and thus 19 indirectly affected zip codes in Texas.
 
 #### 4.(Partner 1) Make a choropleth plot of the Texas zip codes with a different color for each of the 3 categories: directly affected by a closure, within 10 miles of closure but not directly affected, or not affected. 
 
 ```{python}
-###column for affected status
-zips_texas5_3_joined['affected_status'] = 0 
+Q5_4_effected = zips_texas5_3_joined['ZCTA5_left'].unique().tolist() #list of affected total
+Q5_4_direct_effected = Q5_1_closures['ZCTA5'].unique().tolist() #list of direct effected 
+Q5_4_indirect_effected = [item for item in Q5_4_effected if item not in Q5_4_direct_effected]
+
+###column for affected status 
+zips_texas5_4 = zips_texas5_2
+zips_texas5_4['affected_status'] = 'unaffected'
+
+zips_texas5_4.loc[zips_texas5_4['ZCTA5'].isin(Q5_4_direct_effected), 'affected_status'] = 'direct'
+zips_texas5_4.loc[zips_texas5_4['ZCTA5'].isin(Q5_4_indirect_effected), 'affected_status'] = 'indirect'
+
+###plot 
+fig, ax = plt.subplots(1,1, figsize=(12,8))
+zips_texas5_4.plot(column="affected_status", cmap='Set1', legend=True, ax=ax)
+ax.set_title("Hospital Closure Effected Zip Codes 2016-19 by direct or Indirect effect")
+plt.xlabel("Longitude")
+plt.ylabel("Latitude")
+plt.show
+
 ```
 
 ## Reflecting on the exercise (10 pts) 
 
 #### (Partner 1) The “first-pass” method we’re using to address incorrectly identified closures in the data is imperfect. Can you think of some potential issues that could arise still and ways to do a better job at confirming hospital closures?
 
+For accounting for mergers, we only filtered for areas (zip codes) where hospital numbers do not decrease--this does not necessarily mean no closures occred. An area may have hospitals that were not merged but shut down yet had more hospitals open seperatlt.
+
+One possible way is to check for the names of hospitals--make sure a new hospital dosent show up with the same name of a previously closed hospital (if it is the same name it is highly likely a merger, for example).
+
 #### (Partner 2) Consider the way we are identifying zip codes affected by closures. How well does this reflect changes in zip-code-level access to hospitals? Can you think of some ways to improve this measure?
+
 While identifying closures by zip codes might provide numbers of active hospitals in a zip code it does take into consideration population size of the area that the hospital was serving or anything to do with the health care capacity lost by the closure. We could improve our understanding of how closures impact zip-code level access to hospitals by adding metrics on the capcity of the hospitals lost, like number of beds, how long the drive is to the next nearest hospital or the hospital/population ratio before and after the closure. 
