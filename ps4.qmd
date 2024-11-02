@@ -57,6 +57,7 @@ import time
 import os
 import warnings
 import geopandas as gpd
+import numpy as np
 warnings.filterwarnings('ignore')
 
 ```
@@ -84,7 +85,7 @@ Facility name:               FAC_NAME
 ```{python}
 ### import data (default directory is just the repo)
 
-os.chdir('/Users/willsigal/Documents/GitHub/problem-set-4-andy-fan-will-sigal/Data') #will wd
+os.chdir('/Users/willsigal/Desktop') #will wd
 
 #os.chdir('d:\\UChicago\\Classes\\2024Qfall\\Programming Python\\problem-set-4-andy-fan-will-sigal\\Data') #andy wd
 
@@ -193,27 +194,38 @@ We will now use the 2016-2019 files to identify hospital closures nationally. A 
 #### 1. (Partner 2) Use this definition to create a list of all hospitals that were active in 2016 that were suspected to have closed by 2019. Record the facility name and zip of each hospital as well as the year of suspected closure (when they become terminated or disappear from the data). How many hospitals are there that fit this definition?
 
 ```{python}
-active_in_2016 = df[(df['year'] == 2016) & (df['PGM_TRMNTN_CD'] == 0)][['PRVDR_NUM', 'FAC_NAME', 'ZIP_CD']].copy()
+active_2016 = df_2016[df_2016["PGM_TRMNTN_CD"] == 0]
+active_2017 = df_2017[df_2017["PGM_TRMNTN_CD"] == 0]
+active_2018 = df_2018[df_2018["PGM_TRMNTN_CD"] == 0]
+active_2019 = df_2019[df_2019["PGM_TRMNTN_CD"] == 0]
 
-last_active_years = df[df['PGM_TRMNTN_CD'] == 0].groupby('PRVDR_NUM')['year'].max().reset_index(name='last_active_year')
+def active_in_year(df, provider_num):
+    row = df[df["PRVDR_NUM"] == provider_num]
+    return not row.empty and row["PGM_TRMNTN_CD"].values[0] == 0
 
-active_in_2016 = active_in_2016.merge(last_active_years, on='PRVDR_NUM', how='left')
+def determine_year_closed(provider_num):
+    if not active_in_year(active_2017, provider_num):
+        return 2017
+    elif not active_in_year(active_2018, provider_num):
+        return 2018
+    elif not active_in_year(active_2019, provider_num):
+        return 2019
+    return None
 
-suspected_closures = active_in_2016[active_in_2016['last_active_year'] < 2019].copy()
+active_2016_only = active_2016[active_2016["PGM_TRMNTN_CD"] == 0]
+active_2016_only["Year_Closed"] = active_2016_only["PRVDR_NUM"].apply(determine_year_closed)
 
-active_hospitals_count = active_in_2016.shape[0]
+closed_hospitals = active_2016_only.dropna(subset=["Year_Closed"]).reset_index(drop=True)
 
-closure_count = suspected_closures.shape[0]
-suspected_closures[['FAC_NAME', 'ZIP_CD', 'last_active_year']]
-
-closure_count
+print(f"Number of suspected hospital closures: {len(closed_hospitals)}")
+print(closed_hospitals[["FAC_NAME", "PRVDR_NUM", "ZIP_CD", "Year_Closed"]].sort_values(by="FAC_NAME").head(10))
 ```
 
 
 
 #### 2. (Partner 2) Sort this list of hospitals by name and report the names and year of suspected closure for the first 10 rows.
 ```{python}
-first_ten_closures = suspected_closures.sort_values(by='FAC_NAME').head(10)[['FAC_NAME', 'last_active_year']]
+first_ten_closures = closed_hospitals.sort_values(by='FAC_NAME').head(10)[['FAC_NAME', 'Year_Closed']]
 
 first_ten_closures
 ```
@@ -228,33 +240,34 @@ active_hospitals_count = df[df['PGM_TRMNTN_CD'] == 0].groupby(['ZIP_CD', 'year']
 zip_year_counts = active_hospitals_count.pivot(index='ZIP_CD', columns='year', values='active_count').fillna(0)
 
 def post_closure_counts(row):
-    closure_year = row['last_active_year']
+    closure_year = row['Year_Closed']
     if row['ZIP_CD'] in zip_year_counts.index:
+        # Get counts for years after the closure year
         post_years = zip_year_counts.columns[zip_year_counts.columns > closure_year]
         counts = zip_year_counts.loc[row['ZIP_CD'], post_years]
         return counts.values if not counts.empty else np.array([0])
     return np.array([0])
 
-suspected_closures['post_closure_counts'] = suspected_closures.apply(post_closure_counts, axis=1)
+closed_hospitals['post_closure_counts'] = closed_hospitals.apply(post_closure_counts, axis=1)
+
 
 #check if count is higher or equal in any years post closure
-suspected_closures['closure_year_count'] = suspected_closures.apply(
-    lambda row: zip_year_counts.at[row['ZIP_CD'], row['last_active_year']]
-                if (row['ZIP_CD'] in zip_year_counts.index and row['last_active_year'] in zip_year_counts.columns) else 0, axis=1
+closed_hospitals['closure_year_count'] = closed_hospitals.apply(
+    lambda row: zip_year_counts.at[row['ZIP_CD'], row['Year_Closed']]
+    if (row['ZIP_CD'] in zip_year_counts.index and row['Year_Closed'] in zip_year_counts.columns) else 0, axis=1
 )
 
-potential_mergers = suspected_closures[
-    suspected_closures.apply(lambda row: any(row['closure_year_count'] <= count for count in row['post_closure_counts']), axis=1)
+potential_mergers = closed_hospitals[
+    closed_hospitals.apply(lambda row: any(row['closure_year_count'] <= count for count in row['post_closure_counts']), axis=1)
 ]
 
 merger_count = potential_mergers.shape[0]
-merger_count
+print(f"Number of potential mergers: {merger_count}")
 ```
 
     b. After correcting for this, how many hospitals do you have left?
 ```{python}
-true_closures = suspected_closures[~suspected_closures.index.isin(potential_mergers.index)]
-
+true_closures = closed_hospitals[~closed_hospitals.index.isin(potential_mergers.index)]
 remaining_closures_count = true_closures.shape[0]
 
 remaining_closures_count
@@ -262,7 +275,7 @@ remaining_closures_count
 
     c. Sort this list of corrected hospital closures by name and report the first 10 rows.
 ```{python}
-correct_closure_df = true_closures.sort_values(by='FAC_NAME').head(10)[['FAC_NAME', 'ZIP_CD', 'last_active_year']]
+correct_closure_df = true_closures.sort_values(by='FAC_NAME').head(10)[['FAC_NAME', 'ZIP_CD', 'Year_Closed']]
 
 correct_closure_df.head(10)
 ```
@@ -291,9 +304,9 @@ Navigate to the Census shapefiles (link), select “gz_2010_us_860_00_500k.zip�
 
 ```{python}
 import geopandas as gpd
-#os.chdir('/Users/willsigal/Documents/GitHub/problem-set-4-andy-fan-will-sigal/Shapefiles') #will wd shapefiles
+os.chdir('/Users/willsigal/Desktop/Shapefiles') #will wd shapefiles
 
-os.chdir('d:\\UChicago\\Classes\\2024Qfall\\Programming Python\\problem-set-4-andy-fan-will-sigal\\Shapefiles') #andy wd shapefiles
+#os.chdir('d:\\UChicago\\Classes\\2024Qfall\\Programming Python\\problem-set-4-andy-fan-will-sigal\\Shapefiles') #andy wd shapefiles
 
 zips_all = gpd.read_file('gz_2010_us_860_00_500k.shp')
 gpd_texas = pd.DataFrame(zips_all)
@@ -338,6 +351,7 @@ zips_all_centroids['geometry'] = zips_all['geometry'].centroid
 zips_all_centroids.shape
 ```
 
+
 ```{python}
 zips_all_centroids.columns
 ```
@@ -346,7 +360,7 @@ zips_all_centroids.columns
 zips_all_centroids.plot()
 ```
 
-Geo_id is the unique identifier, ZCTA5 is the xip code, Name is the name of the area, censusarea is the area of the zcta in square kilometers and geometry is the centroid point geomotry for each ZCTA. 
+Geo_id is the unique identifier, ZCTA5 is the zip code, Name is the name of the area, censusarea is the area of the zcta in square kilometers and geometry is the centroid point geomotry for each ZCTA. There are 33,120 rows as there are 33,120 observations
 
 
 #### 2. (Partner 2) Create two GeoDataFrames as subsets of zips_all_centroids. First, create all zip codes in Texas: zips_texas_centroids. Then, create all zip codes in Texas or a bordering state: zips_texas_borderstates_centroids, using the zip code prefixes to make these subsets. How many unique zip codes are in each of these subsets? 
@@ -387,7 +401,7 @@ zip_codes_with_hospitals = hospitals_2016['ZIP_CD'].unique()
 
 zips_withhospital_centroids = zips_texas_borderstates_centroids[zips_texas_borderstates_centroids['ZCTA5'].isin(zip_codes_with_hospitals)]
 
-zips_withhospital_centroids.plot()
+zips_withhospital_centroids.plot(markersize = 5)
 ```
 
 ```{python}
@@ -486,7 +500,7 @@ zips_texas_centroids['nearest_hospital_distance_miles'] = pd.to_numeric(zips_tex
 zips_texas_centroids.plot(
     column='nearest_hospital_distance_miles', 
     cmap='coolwarm', markersize = 2,
-    legend=True,legend_kwds={'label': "Distance to Nearest Hospital"})
+    legend=True,legend_kwds={'label': "Distance to Nearest Hospital (Miles)"})
 ```
 
 ## Effects of closures on access in Texas (15 pts)
@@ -550,3 +564,4 @@ There are 1518 total affected zip codes, and 1184 directly affected zip codes in
 #### (Partner 1) The “first-pass” method we’re using to address incorrectly identified closures in the data is imperfect. Can you think of some potential issues that could arise still and ways to do a better job at confirming hospital closures?
 
 #### (Partner 2) Consider the way we are identifying zip codes affected by closures. How well does this reflect changes in zip-code-level access to hospitals? Can you think of some ways to improve this measure?
+While identifying closures by zip codes might provide numbers of active hospitals in a zip code it does take into consideration population size of the area that the hospital was serving or anything to do with the health care capacity lost by the closure. We could improve our understanding of how closures impact zip-code level access to hospitals by adding metrics on the capcity of the hospitals lost, like number of beds, how long the drive is to the next nearest hospital or the hospital/population ratio before and after the closure. 
