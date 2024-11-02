@@ -352,7 +352,7 @@ subset_texas_centroids = zips_texas_centroids.head(10)
 start_time = time.time()
 
 distances = []
-for _, texas_zip in subset_texas_centroids.iterrows():
+for i, texas_zip in subset_texas_centroids.iterrows():
     min_distance = zips_withhospital_centroids.distance(texas_zip.geometry).min()
     distances.append(min_distance)
 
@@ -374,7 +374,7 @@ print(f'it will take approx. {full_data_estimate} seconds to join the whole df')
 start_time_full = time.time()
 
 full_distances = []
-for _, texas_zip in zips_texas_centroids.iterrows():
+for i, texas_zip in zips_texas_centroids.iterrows():
     min_distance = zips_withhospital_centroids.distance(texas_zip.geometry).min()
     full_distances.append(min_distance)
 
@@ -424,7 +424,6 @@ zips_texas_centroids['nearest_hospital_distance']
 ```
 
 ```{python}
-
 zips_texas_centroids['nearest_hospital_distance_miles'] = pd.to_numeric(zips_texas_centroids['nearest_hospital_distance_miles'], errors='coerce')
 
 zips_texas_centroids.plot(
