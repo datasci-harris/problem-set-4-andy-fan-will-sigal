@@ -26,7 +26,7 @@ include-before-body:
 1. This problem set is a paired problem set.
 2. Play paper, scissors, rock to determine who goes first. Call that person *Partner 1*.
     - Partner 1 (name and cnet ID):  Andy Fan, fanx
-    - Partner 2 (name and cnet ID):
+    - Partner 2 (name and cnet ID): Will Sigal, wsigal
 3. Partner 1 will accept the `ps4` and then share the link it creates with their partner. You can only share it with one partner so you will not be able to change it after your partner has accepted. 
 4. "This submission is our work alone and complies with the 30538 integrity policy." Add your initials to indicate your agreement: 
 
@@ -201,15 +201,16 @@ last_active_years = df[df['PGM_TRMNTN_CD'] == 0].groupby('PRVDR_NUM')['year'].ma
 
 active_in_2016 = active_in_2016.merge(last_active_years, on='PRVDR_NUM', how='left')
 
-active_hospitals_count = active_in_2016.shape[0]
-
 suspected_closures = active_in_2016[active_in_2016['last_active_year'] < 2019].copy()
 
+active_hospitals_count = active_in_2016.shape[0]
+
 closure_count = suspected_closures.shape[0]
-suspected_closures[['FAC_NAME', 'ZIP_CD', 'last_active_year']], closure_count
+suspected_closures[['FAC_NAME', 'ZIP_CD', 'last_active_year']]
 
 closure_count
 ```
+
 
 
 #### 2. (Partner 2) Sort this list of hospitals by name and report the names and year of suspected closure for the first 10 rows.
@@ -224,25 +225,37 @@ first_ten_closures
     a. Among the suspected closures, how many hospitals fit this definition of potentially being a merger/acquisition?
 ```{python}
 active_hospitals_count = df[df['PGM_TRMNTN_CD'] == 0].groupby(['ZIP_CD', 'year']).size().reset_index(name='active_count')
+
+#count hospitals by zip each year
 zip_year_counts = active_hospitals_count.pivot(index='ZIP_CD', columns='year', values='active_count').fillna(0)
 
+def post_closure_counts(row):
+    closure_year = row['last_active_year']
+    if row['ZIP_CD'] in zip_year_counts.index:
+        post_years = zip_year_counts.columns[zip_year_counts.columns > closure_year]
+        counts = zip_year_counts.loc[row['ZIP_CD'], post_years]
+        return counts.values if not counts.empty else np.array([0])
+    return np.array([0])
+
+suspected_closures['post_closure_counts'] = suspected_closures.apply(post_closure_counts, axis=1)
+
+#check if count is higher or equal in any years post closure
 suspected_closures['closure_year_count'] = suspected_closures.apply(
-    lambda row: zip_year_counts.at[row['ZIP_CD'], row['last_active_year']] if row['ZIP_CD'] in zip_year_counts.index else 0, axis=1
-)
-suspected_closures['next_year_count'] = suspected_closures.apply(
-    lambda row: zip_year_counts.at[row['ZIP_CD'], row['last_active_year'] + 1] if row['ZIP_CD'] in zip_year_counts.index else 0, axis=1
+    lambda row: zip_year_counts.at[row['ZIP_CD'], row['last_active_year']]
+                if (row['ZIP_CD'] in zip_year_counts.index and row['last_active_year'] in zip_year_counts.columns) else 0, axis=1
 )
 
-potential_mergers = suspected_closures[suspected_closures['closure_year_count'] <= suspected_closures['next_year_count']]
+potential_mergers = suspected_closures[
+    suspected_closures.apply(lambda row: any(row['closure_year_count'] <= count for count in row['post_closure_counts']), axis=1)
+]
 
 merger_count = potential_mergers.shape[0]
-
 merger_count
 ```
 
     b. After correcting for this, how many hospitals do you have left?
 ```{python}
-true_closures = suspected_closures[suspected_closures['closure_year_count'] > suspected_closures['next_year_count']]
+true_closures = suspected_closures[~suspected_closures.index.isin(potential_mergers.index)]
 
 remaining_closures_count = true_closures.shape[0]
 
